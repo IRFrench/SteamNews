@@ -1,0 +1,47 @@
+{
+    "appnews": {
+        "appid": 440,
+        "newsitems": [
+            {
+                "gid": "6474562312182425348",
+                "title": "TF2 Coaching Central Newbie Cup VII",
+                "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/6474562312182425348",
+                "is_external_url": true,
+                "author": "erics",
+                "contents": "{STEAM_CLAN_IMAGE}/554111/f1ad0f1f7f2236e63bcac4a87f8a7f93e44adbc7.png TF2 Coaching Central is back with their seventh North American Newbie 6s Cup, a learning experience and friendly competition for people who are new to competitive 6v6. Players with no to minimal competitive experience will sign u...",
+                "feedlabel": "Community Announcements",
+                "date": 1712871506,
+                "feedname": "steam_community_announcements",
+                "feed_type": 1,
+                "appid": 440
+            },
+            {
+                "gid": "6474562312182425826",
+                "title": "TF2 Coaching Central Newbie Cup VII",
+                "url": "https://steamstore-a.akamaihd.net/news/externalpost/tf2_blog/6474562312182425826",
+                "is_external_url": true,
+                "author": "",
+                "contents": "<a href=\"https://discord.gg/ybSYAd9\" target=\"_blank\"> </a> <a href=\"https://discord.gg/ybSYAd9\" target=\"_blank\">TF2 Coaching Central</a> is back with their seventh North American Newbie 6s Cup, a learning experience and friendly competition for people who are new to competitive 6v6. Players with no to minimal competitive experience will sign up to be placed on a team of six, led by a coach who will teach the ba...",
+                "feedlabel": "TF2 Blog",
+                "date": 1712871420,
+                "feedname": "tf2_blog",
+                "feed_type": 0,
+                "appid": 440
+            },
+            {
+                "gid": "5762993398270879786",
+                "title": "Particle Mayhem 2 Results",
+                "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/5762993398270879786",
+                "is_external_url": true,
+                "author": "erics",
+                "contents": "{STEAM_CLAN_IMAGE}/554111/7ed937d4b7b66c63c1c2b321d2b5221a5602dfd5.png (Image credit: LazerSofa, Mr. Light, and boba) The Particle Mayhem 2 team is thrilled to bring you their contest results! After another 100-day event, dozens of lovely submissions, and a monumental 555 key prize pool, the Particl...",
+                "feedlabel": "Community Announcements",
+                "date": 1712792926,
+                "feedname": "steam_community_announcements",
+                "feed_type": 1,
+                "appid": 440
+            }
+        ],
+        "count": 3528
+    }
+}
