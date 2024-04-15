@@ -7,18 +7,18 @@ import (
 
 type SteamClient struct {
 	client *http.Client
-	user   User
+	key    string
 }
 
 func (s *SteamClient) sendRequest(req *http.Request) (*http.Response, error) {
 	return s.client.Do(req)
 }
 
-func NewClient(user User) SteamClient {
+func NewClient(key string) SteamClient {
 	return SteamClient{
-		&http.Client{
+		client: &http.Client{
 			Timeout: 5 * time.Second,
 		},
-		user,
+		key: key,
 	}
 }

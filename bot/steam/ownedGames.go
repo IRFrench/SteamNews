@@ -26,11 +26,11 @@ type Game struct {
 	PlaytimeDisconnected   int    `json:"playtime_disconnected,omitempty"`
 }
 
-func (s *SteamClient) GetOwnedGames() ([]Game, error) {
+func (s *SteamClient) GetOwnedGames(steamId int) ([]Game, error) {
 	steamUrl := fmt.Sprintf(
 		"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=%s&steamid=%d&format=json&include_appinfo=true",
-		s.user.key,
-		s.user.id,
+		s.key,
+		steamId,
 	)
 
 	request, err := http.NewRequest(http.MethodGet, steamUrl, nil)
@@ -43,6 +43,10 @@ func (s *SteamClient) GetOwnedGames() ([]Game, error) {
 		return nil, err
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("non 200 response recieved from API")
+	}
 
 	var jsonResponse OverResponse
 	if err := json.NewDecoder(response.Body).Decode(&jsonResponse); err != nil {

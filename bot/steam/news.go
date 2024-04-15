@@ -54,6 +54,10 @@ func (s *SteamClient) GetAppNews(appId int) ([]Article, error) {
 	}
 	defer response.Body.Close()
 
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("non 200 response recieved from API")
+	}
+
 	var jsonResponse OverNews
 	if err := json.NewDecoder(response.Body).Decode(&jsonResponse); err != nil {
 		return nil, err

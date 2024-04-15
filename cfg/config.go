@@ -9,22 +9,32 @@ import (
 type Configuration struct {
 	Steam   SteamConfig   `yaml:"steam,omitempty"`
 	Discord DiscordConfig `yaml:"discord,omitempty"`
+	Users   []User        `yaml:"users,omitempty"`
 }
 
 type SteamConfig struct {
-	User    User  `yaml:"user,omitempty"`
-	Added   []int `yaml:"added,omitempty"`
-	Removed []int `yaml:"removed,omitempty"`
-}
-
-type User struct {
 	Key string `yaml:"key,omitempty"`
-	Id  int    `yaml:"id,omitempty"`
 }
 
 type DiscordConfig struct {
 	BotToken string `yaml:"bot_token,omitempty"`
-	UserId   int    `yaml:"user_id,omitempty"`
+}
+
+type User struct {
+	Name      string    `yamk:"name,omitempty"`
+	DiscordId int       `yaml:"discord_id,omitempty"`
+	Steam     SteamUser `yaml:"steam,omitempty"`
+}
+
+type SteamUser struct {
+	Id      int         `yaml:"id,omitempty"`
+	Added   []SteamGame `yaml:"added,omitempty"`
+	Removed []int       `yaml:"removed,omitempty"`
+}
+
+type SteamGame struct {
+	Name string `yaml:"name,omitempty"`
+	Id   int    `yaml:"id,omitempty"`
 }
 
 func ReadConfiguration(configPath string) (Configuration, error) {

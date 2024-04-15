@@ -13,7 +13,6 @@ const (
 type DiscordClient struct {
 	client *http.Client
 	auth   string
-	userId int
 }
 
 func (d *DiscordClient) sendRequest(request *http.Request) (*http.Response, error) {
@@ -32,10 +31,9 @@ func (d *DiscordClient) sendRequest(request *http.Request) (*http.Response, erro
 	return d.client.Do(request)
 }
 
-func NewDiscordClient(botToken string, userId int) DiscordClient {
+func NewDiscordClient(botToken string) DiscordClient {
 	return DiscordClient{
 		client: &http.Client{},
 		auth:   fmt.Sprintf("Bot %s", botToken),
-		userId: userId,
 	}
 }
