@@ -12,7 +12,10 @@ Thus, this project was born. It uses a bot to send DM messages to the configured
 
 ## Use
 
-Set up the configuration and run the service. An example configuration would look like this
+Set up the configuration and run the service. The configuration is searched for using the `ETC` environment variable.
+
+An example configuration would look like this
+
 ```
 discord:
   bot_token: "<BOT TOKEN HERE>"

@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	configEnviroment = "ENV"
+	configEnviroment = "ETC"
 )
 
 func main() {
