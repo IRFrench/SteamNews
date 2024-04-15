@@ -18,6 +18,9 @@ discord:
   bot_token: "<BOT TOKEN HERE>"
 steam:
   key: "<STEAM WEBAPI KEY HERE>"
+start_time:
+  hour: 19
+  minute: 0
 users:
   - name: "test user" // Only used for logging
     discord_id: <DISCORD USER ID>
@@ -45,6 +48,10 @@ When you have created the bot, you will need to go to installation, set authoriz
 For this, you will need a web API token. You can create one here: https://steamcommunity.com/dev/apikey
 
 When you have this, you are mostly set up. Just add your user id, any appids you want ignored and any extra games you want news on.
+
+### Start time
+
+I didn't want to wait until 7 to start the service, so I added a waiter to wait till 7 for me.
 
 ## Future work
 
