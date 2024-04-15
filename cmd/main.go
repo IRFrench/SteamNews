@@ -31,7 +31,7 @@ func runServer() error {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
-	log.Info().Msg("starting the service")
+	log.Info().Msg("creating the service")
 
 	flags := cfg.ReadFlags()
 	if flags.Verbose {
@@ -47,11 +47,6 @@ func runServer() error {
 		return fmt.Errorf("missing %s environment", configEnviroment)
 	}
 
-	ticker := time.NewTicker(24 * time.Hour)
-
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-
 	config, err := cfg.ReadConfiguration(configPath)
 	if err != nil {
 		log.Err(err).
@@ -59,6 +54,26 @@ func runServer() error {
 			Msg("failed to load configuration")
 		return err
 	}
+
+	waitForStart := time.NewTicker(1 * time.Minute)
+	log.Info().
+		Int("hour", config.StartTime.Hour).
+		Int("minute", config.StartTime.Minute).
+		Msg("Waiting to start the service")
+	for {
+		<-waitForStart.C
+		currentHour, currentMinute, _ := time.Now().Clock()
+		if currentHour == config.StartTime.Hour && currentMinute == config.StartTime.Minute {
+			break
+		}
+	}
+
+	log.Info().Time("start", time.Now()).Msg("starting the service")
+
+	ticker := time.NewTicker(24 * time.Hour)
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	steamClient := steam.NewClient(config.Steam.Key)
 	log.Info().
@@ -69,6 +84,16 @@ func runServer() error {
 	log.Info().
 		Str("token", config.Discord.BotToken).
 		Msg("created discord client")
+
+	// Test the service to make sure it works.
+	// If the service fails on the first run, it likely won't work again so we
+	// error out at that point.
+	log.Info().Msg("testing service")
+	if err := SendNewsUpdate(&steamClient, &discordClient, config.Users); err != nil {
+		log.Err(err).Msg("failed to send news update")
+		return err
+	}
+	log.Info().Msg("test complete")
 
 	for {
 		select {

@@ -7,9 +7,10 @@ import (
 )
 
 type Configuration struct {
-	Steam   SteamConfig   `yaml:"steam,omitempty"`
-	Discord DiscordConfig `yaml:"discord,omitempty"`
-	Users   []User        `yaml:"users,omitempty"`
+	Steam     SteamConfig   `yaml:"steam,omitempty"`
+	Discord   DiscordConfig `yaml:"discord,omitempty"`
+	Users     []User        `yaml:"users,omitempty"`
+	StartTime StartTime     `yaml:"start_time,omitempty"`
 }
 
 type SteamConfig struct {
@@ -35,6 +36,11 @@ type SteamUser struct {
 type SteamGame struct {
 	Name string `yaml:"name,omitempty"`
 	Id   int    `yaml:"id,omitempty"`
+}
+
+type StartTime struct {
+	Hour   int `yaml:"hour,omitempty"`
+	Minute int `yaml:"minute,omitempty"`
 }
 
 func ReadConfiguration(configPath string) (Configuration, error) {
