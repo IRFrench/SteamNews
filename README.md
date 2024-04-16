@@ -36,6 +36,7 @@ users:
       added:
         - name: "fake_game"
           id: 340
+      played_only: true
 ```
 
 ### Discord
@@ -50,7 +51,12 @@ When you have created the bot, you will need to go to installation, set authoriz
 
 For this, you will need a web API token. You can create one here: https://steamcommunity.com/dev/apikey
 
-When you have this, you are mostly set up. Just add your user id, any appids you want ignored and any extra games you want news on.
+When you have this, you are mostly set up. Once you have your steam ID in the configuration, you are good to go.
+
+From here you just need to add any configuration you would like for your news.
+- `removed` is a list of removed games, games you don't want news for.
+- `added` is a list of extra games you wanted added, like any games you don't own
+- `played_only` will only collect news for played games. Added games will work even if not played
 
 ### Start time
 

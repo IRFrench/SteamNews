@@ -131,8 +131,9 @@ func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.Disco
 		for _, addedGame := range user.Steam.Added {
 			log.Debug().Str("game", addedGame.Name).Msg("added game")
 			games = append(games, steam.Game{
-				Name:  addedGame.Name,
-				Appid: addedGame.Id,
+				Name:            addedGame.Name,
+				Appid:           addedGame.Id,
+				PlaytimeForever: 1,
 			})
 		}
 
@@ -205,8 +206,6 @@ func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.Disco
 			Int("collected articles", len(collectedNews)).
 			Int("games searched", gameCount).
 			Msg("collected all news for games")
-
-		return fmt.Errorf("test")
 
 		// Send discord message
 		channel, err := discordClient.CreateDmChannel(user.DiscordId)
