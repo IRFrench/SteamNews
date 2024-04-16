@@ -28,9 +28,10 @@ type User struct {
 }
 
 type SteamUser struct {
-	Id      int         `yaml:"id,omitempty"`
-	Added   []SteamGame `yaml:"added,omitempty"`
-	Removed []int       `yaml:"removed,omitempty"`
+	Id         int         `yaml:"id,omitempty"`
+	Added      []SteamGame `yaml:"added,omitempty"`
+	Removed    []int       `yaml:"removed,omitempty"`
+	PlayedOnly bool        `yaml:"played_only,omitempty"`
 }
 
 type SteamGame struct {

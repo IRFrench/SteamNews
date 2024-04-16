@@ -136,11 +136,19 @@ func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.Disco
 			})
 		}
 
+		gameCount := 0
 		for _, game := range games {
 			// If it has been removed, move on
 			if contains(user.Steam.Removed, game.Appid) {
 				log.Warn().Str("game", game.Name).Msg("skipped game")
 				continue
+			}
+
+			if user.Steam.PlayedOnly {
+				if game.PlaytimeForever == 0 {
+					log.Warn().Str("game", game.Name).Msg("skipped since not played")
+					continue
+				}
 			}
 
 			log.Debug().
@@ -181,6 +189,8 @@ func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.Disco
 				Str("game", game.Name).
 				Msg("collected articles")
 
+			gameCount += 1
+
 			// If there is no new news, skip
 			if len(articles) > 0 {
 				collectedNews = append(collectedNews, discord.Game{
@@ -192,8 +202,11 @@ func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.Disco
 		}
 
 		log.Debug().
-			Int("game news count", len(collectedNews)).
+			Int("collected articles", len(collectedNews)).
+			Int("games searched", gameCount).
 			Msg("collected all news for games")
+
+		return fmt.Errorf("test")
 
 		// Send discord message
 		channel, err := discordClient.CreateDmChannel(user.DiscordId)
