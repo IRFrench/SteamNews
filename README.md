@@ -57,6 +57,7 @@ From here you just need to add any configuration you would like for your news.
 - `removed` is a list of removed games, games you don't want news for.
 - `added` is a list of extra games you wanted added, like any games you don't own
 - `played_only` will only collect news for played games. Added games will work even if not played
+- `steam_only` only read articles from the steam community announcements
 
 ### Start time
 

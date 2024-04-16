@@ -32,6 +32,7 @@ type SteamUser struct {
 	Added      []SteamGame `yaml:"added,omitempty"`
 	Removed    []int       `yaml:"removed,omitempty"`
 	PlayedOnly bool        `yaml:"played_only,omitempty"`
+	SteamOnly  bool        `yaml:"steam_only,omitempty"`
 }
 
 type SteamGame struct {

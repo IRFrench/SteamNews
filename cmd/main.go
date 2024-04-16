@@ -168,6 +168,13 @@ func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.Disco
 			// Sort through the news
 			var articles []discord.ShortArticle
 			for _, article := range newsArticles {
+				if user.Steam.SteamOnly {
+					if article.FeedType != 1 {
+						log.Warn().Str("feed", article.Feedname).Msg("not a steam feed")
+						continue
+					}
+				}
+
 				articleDate := time.Unix(int64(article.Date), 0)
 
 				if articleDate.After(lastTime) {
@@ -175,6 +182,8 @@ func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.Disco
 					if err != nil {
 						log.Warn().Str("url", article.Url).Msg("could not parse url")
 					}
+
+					fmt.Println(article)
 
 					articles = append(articles, discord.ShortArticle{
 						Title:    article.Title,
