@@ -55,16 +55,18 @@ func runServer() error {
 		return err
 	}
 
-	waitForStart := time.NewTicker(1 * time.Minute)
-	log.Info().
-		Int("hour", config.StartTime.Hour).
-		Int("minute", config.StartTime.Minute).
-		Msg("Waiting to start the service")
-	for {
-		<-waitForStart.C
-		currentHour, currentMinute, _ := time.Now().Clock()
-		if currentHour == config.StartTime.Hour && currentMinute == config.StartTime.Minute {
-			break
+	if !flags.Quick {
+		waitForStart := time.NewTicker(2 * time.Second)
+		log.Info().
+			Int("hour", config.StartTime.Hour).
+			Int("minute", config.StartTime.Minute).
+			Msg("Waiting to start the service")
+		for {
+			<-waitForStart.C
+			currentHour, currentMinute, _ := time.Now().Clock()
+			if currentHour == config.StartTime.Hour && currentMinute == config.StartTime.Minute {
+				break
+			}
 		}
 	}
 

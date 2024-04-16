@@ -8,7 +8,7 @@ import (
 
 const (
 	articleCount  = 5
-	contentLength = 100
+	contentLength = 10
 )
 
 type OverNews struct {

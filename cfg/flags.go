@@ -3,11 +3,13 @@ package cfg
 import "flag"
 
 var (
-	verboseFlag = flag.Bool("v", false, "Enables debug messages")
+	verboseFlag    = flag.Bool("v", false, "Enables debug messages")
+	quickStartFlag = flag.Bool("q", false, "Enabled quick start")
 )
 
 type Flags struct {
 	Verbose bool
+	Quick   bool
 }
 
 func ReadFlags() Flags {
@@ -15,5 +17,6 @@ func ReadFlags() Flags {
 
 	return Flags{
 		Verbose: *verboseFlag,
+		Quick:   *quickStartFlag,
 	}
 }

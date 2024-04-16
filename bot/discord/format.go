@@ -31,10 +31,7 @@ func formatMessage(games []Game) []string {
 
 		for _, article := range game.News {
 			tempMessage.WriteString(fmt.Sprintf(
-				"Title: %s\nAuthor: %s\nDate: %s\nUrl: %s\n\n",
-				article.Title,
-				article.Author,
-				article.Date.Format(time.DateTime),
+				"%s\n",
 				article.Url,
 			))
 		}
