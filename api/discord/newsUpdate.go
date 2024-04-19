@@ -52,7 +52,7 @@ type MessageObject struct {
 }
 
 func (d *DiscordClient) SendNewsMessage(news []Game, channelId string) error {
-	discordUrl := fmt.Sprintf("%s/v%d/channels/%s/messages", discordUrl, discordApiVersion, channelId)
+	discordUrl := fmt.Sprintf("%s/v%d/channels/%s/messages", DISCORD_URL, DISCORD_API_VERSION, channelId)
 
 	messages := formatMessage(news)
 	for _, message := range messages {
@@ -66,7 +66,6 @@ func (d *DiscordClient) SendNewsMessage(news []Game, channelId string) error {
 		if err != nil {
 			return err
 		}
-		defer request.Body.Close()
 
 		response, err := d.sendRequest(request)
 		if err != nil {

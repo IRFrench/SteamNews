@@ -1,8 +1,9 @@
 package main
 
 import (
-	"SteamNews/bot/discord"
-	"SteamNews/bot/steam"
+	"SteamNews/api/discord"
+	"SteamNews/api/steam"
+	"SteamNews/bot"
 	"SteamNews/cfg"
 	"fmt"
 	"net/url"
@@ -87,6 +88,18 @@ func runServer() error {
 		Str("token", config.Discord.BotToken).
 		Msg("created discord client")
 
+	socket, err := discordClient.CollectSocket()
+	if err != nil {
+		log.Err(err).Msg("couldn't collect socket information")
+		return err
+	}
+
+	// Setup the discord bot
+	botErrorChan := make(chan error, 1)
+
+	discordBot := bot.NewBot(socket.Url)
+	go discordBot.Run(botErrorChan)
+
 	// Test the service to make sure it works.
 	// If the service fails on the first run, it likely won't work again so we
 	// error out at that point.
@@ -106,11 +119,15 @@ func runServer() error {
 			if err := SendNewsUpdate(&steamClient, &discordClient, config.Users); err != nil {
 				log.Err(err).Msg("failed to send news update")
 			}
+		case err := <-botErrorChan:
+			log.Err(err).Msg("encountered an error with the bot")
 		}
 	}
 }
 
 func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.DiscordClient, users []cfg.User) error {
+	return nil
+
 	lastTime := time.Now().Add(-24 * time.Hour)
 	log.Info().Msg("Gathering news for users")
 

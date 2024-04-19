@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	articleCount  = 5
-	contentLength = 10
+	ARTICLE_COUNT  = 5
+	CONTENT_LENGTH = 10
 )
 
 type OverNews struct {
@@ -39,8 +39,8 @@ func (s *SteamClient) GetAppNews(appId int) ([]Article, error) {
 	steamUrl := fmt.Sprintf(
 		"http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=%d&count=%d&maxlength=%d&format=json",
 		appId,
-		articleCount,
-		contentLength,
+		ARTICLE_COUNT,
+		CONTENT_LENGTH,
 	)
 
 	request, err := http.NewRequest(http.MethodGet, steamUrl, nil)

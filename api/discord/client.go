@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	discordApiVersion = 10
-	discordUrl        = "https://discord.com/api"
+	DISCORD_API_VERSION = 10
+	DISCORD_URL         = "https://discord.com/api"
 )
 
 type DiscordClient struct {
@@ -22,7 +22,7 @@ func (d *DiscordClient) sendRequest(request *http.Request) (*http.Response, erro
 	)
 	request.Header.Add(
 		"User-Agent",
-		fmt.Sprintf("DiscordBot (%s, %d)", discordUrl, discordApiVersion),
+		fmt.Sprintf("DiscordBot (%s, %d)", DISCORD_URL, DISCORD_API_VERSION),
 	)
 	request.Header.Add(
 		"Content-Type",

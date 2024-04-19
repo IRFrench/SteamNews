@@ -28,7 +28,7 @@ type Message struct {
 }
 
 func (d *DiscordClient) CreateDmChannel(userId int) (Message, error) {
-	discordUrl := fmt.Sprintf("%s/v%d/users/@me/channels", discordUrl, discordApiVersion)
+	discordUrl := fmt.Sprintf("%s/v%d/users/@me/channels", DISCORD_URL, DISCORD_API_VERSION)
 
 	parsedBody, err := json.Marshal(DmBody{RecipientId: userId})
 	if err != nil {
@@ -39,7 +39,6 @@ func (d *DiscordClient) CreateDmChannel(userId int) (Message, error) {
 	if err != nil {
 		return Message{}, err
 	}
-	defer request.Body.Close()
 
 	response, err := d.sendRequest(request)
 	if err != nil {

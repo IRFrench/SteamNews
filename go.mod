@@ -5,6 +5,7 @@ go 1.21.1
 require (
 	github.com/rs/zerolog v1.32.0
 	gopkg.in/yaml.v3 v3.0.1
+	nhooyr.io/websocket v1.8.11
 )
 
 require (
