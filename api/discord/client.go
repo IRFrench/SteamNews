@@ -1,6 +1,7 @@
 package discord
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 )
@@ -32,8 +33,15 @@ func (d *DiscordClient) sendRequest(request *http.Request) (*http.Response, erro
 }
 
 func NewDiscordClient(botToken string) DiscordClient {
+	// Discord's CA certificates aren't in alpine??
 	return DiscordClient{
-		client: &http.Client{},
-		auth:   fmt.Sprintf("Bot %s", botToken),
+		client: &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+				},
+			},
+		},
+		auth: fmt.Sprintf("Bot %s", botToken),
 	}
 }
