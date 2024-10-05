@@ -31,7 +31,12 @@ func (b *Bot) performHeartbeat(interval int) {
 		b.requestChan <- heartbeat
 
 		response := <-b.responseChan
-		ack := response.(EventPayload)
+		ack, ok := response.(EventPayload)
+
+		if !ok {
+			log.Error().Msg("could not convert event payload")
+			continue
+		}
 
 		if ack.Op == 11 {
 			continue

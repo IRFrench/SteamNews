@@ -3,12 +3,12 @@ package main
 import (
 	"SteamNews/api/discord"
 	"SteamNews/api/steam"
-	"SteamNews/bot"
 	"SteamNews/cfg"
 	"fmt"
 	"net/url"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -80,25 +80,17 @@ func runServer() error {
 
 	steamClient := steam.NewClient(config.Steam.Key)
 	log.Info().
-		Str("key", config.Steam.Key).
 		Msg("created steam client")
+	log.Debug().
+		Str("key", config.Steam.Key).
+		Msg("steam client info")
 
 	discordClient := discord.NewDiscordClient(config.Discord.BotToken)
 	log.Info().
-		Str("token", config.Discord.BotToken).
 		Msg("created discord client")
-
-	socket, err := discordClient.CollectSocket()
-	if err != nil {
-		log.Err(err).Msg("couldn't collect socket information")
-		return err
-	}
-
-	// Setup the discord bot
-	botErrorChan := make(chan error, 1)
-
-	discordBot := bot.NewBot(socket.Url)
-	go discordBot.Run(botErrorChan)
+	log.Debug().
+		Str("token", config.Discord.BotToken).
+		Msg("discord client info")
 
 	// Test the service to make sure it works.
 	// If the service fails on the first run, it likely won't work again so we
@@ -119,15 +111,11 @@ func runServer() error {
 			if err := SendNewsUpdate(&steamClient, &discordClient, config.Users); err != nil {
 				log.Err(err).Msg("failed to send news update")
 			}
-		case err := <-botErrorChan:
-			log.Err(err).Msg("encountered an error with the bot")
 		}
 	}
 }
 
 func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.DiscordClient, users []cfg.User) error {
-	return nil
-
 	lastTime := time.Now().Add(-24 * time.Hour)
 	log.Info().Msg("Gathering news for users")
 
@@ -142,8 +130,6 @@ func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.Disco
 		}
 		log.Debug().Int("game count", len(games)).Msg("collected owned games")
 
-		collectedNews := []discord.Game{}
-
 		// Add added games to the game list
 		for _, addedGame := range user.Steam.Added {
 			log.Debug().Str("game", addedGame.Name).Msg("added game")
@@ -154,83 +140,98 @@ func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.Disco
 			})
 		}
 
-		gameCount := 0
+		gameSync := sync.WaitGroup{}
+		gameSync.Add(len(games))
+
+		newsChan := make(chan discord.Game, len(games))
+
 		for _, game := range games {
-			// If it has been removed, move on
-			if contains(user.Steam.Removed, game.Appid) {
-				log.Warn().Str("game", game.Name).Msg("skipped game")
-				continue
-			}
-
-			if user.Steam.PlayedOnly {
-				if game.PlaytimeForever == 0 {
-					log.Warn().Str("game", game.Name).Msg("skipped since not played")
-					continue
+			go func(game steam.Game, user cfg.User) {
+				defer gameSync.Done()
+				// If it has been removed, move on
+				if contains(user.Steam.Removed, game.Appid) {
+					log.Warn().Str("game", game.Name).Msg("skipped game")
+					return
 				}
-			}
 
-			log.Debug().
-				Msg("collecting game news")
-
-			newsArticles, err := steamClient.GetAppNews(game.Appid)
-			if err != nil {
-				return err
-			}
-
-			log.Debug().
-				Str("game", game.Name).
-				Int("id", game.Appid).
-				Msg("collected games news")
-
-			// Sort through the news
-			var articles []discord.ShortArticle
-			for _, article := range newsArticles {
-				if user.Steam.SteamOnly {
-					if article.FeedType != 1 {
-						log.Warn().Str("feed", article.Feedname).Msg("not a steam feed")
-						continue
+				if user.Steam.PlayedOnly {
+					if game.PlaytimeForever == 0 {
+						log.Warn().Str("game", game.Name).Msg("skipped since not played")
+						return
 					}
 				}
 
-				articleDate := time.Unix(int64(article.Date), 0)
+				log.Debug().
+					Msg("collecting game news")
 
-				if articleDate.After(lastTime) {
-					url, err := url.Parse(article.Url)
-					if err != nil {
-						log.Warn().Str("url", article.Url).Msg("could not parse url")
+				newsArticles, err := steamClient.GetAppNews(game.Appid)
+				if err != nil {
+					log.Err(err).Msg("failed to collect news")
+					return
+				}
+
+				log.Debug().
+					Str("game", game.Name).
+					Int("id", game.Appid).
+					Msg("collected games news")
+
+				// Sort through the news
+				articles := make([]discord.ShortArticle, 0, len(newsArticles))
+				for _, article := range newsArticles {
+					if user.Steam.SteamOnly {
+						if article.FeedType != 1 {
+							log.Warn().Str("feed", article.Feedname).Msg("not a steam feed")
+							continue
+						}
 					}
 
-					fmt.Println(article)
+					articleDate := time.Unix(int64(article.Date), 0)
 
-					articles = append(articles, discord.ShortArticle{
-						Title:    article.Title,
-						Url:      url.String(),
-						Author:   article.Author,
-						Contents: article.Contents,
-						Date:     articleDate,
-					})
+					if articleDate.After(lastTime) {
+						url, err := url.Parse(article.Url)
+						if err != nil {
+							log.Warn().Str("url", article.Url).Msg("could not parse url")
+						}
+
+						fmt.Println(article)
+
+						articles = append(articles, discord.ShortArticle{
+							Title:    article.Title,
+							Url:      url.String(),
+							Author:   article.Author,
+							Contents: article.Contents,
+							Date:     articleDate,
+						})
+					}
 				}
-			}
-			log.Debug().
-				Int("articles", len(articles)).
-				Str("game", game.Name).
-				Msg("collected articles")
+				log.Debug().
+					Int("articles", len(articles)).
+					Str("game", game.Name).
+					Msg("collected articles")
 
-			gameCount += 1
+				// If there is no new news, skip
+				if len(articles) > 0 {
+					newsChan <- discord.Game{
+						Name: game.Name,
+						Id:   game.Appid,
+						News: articles,
+					}
+				}
+			}(game, user)
+		}
 
-			// If there is no new news, skip
-			if len(articles) > 0 {
-				collectedNews = append(collectedNews, discord.Game{
-					Name: game.Name,
-					Id:   game.Appid,
-					News: articles,
-				})
-			}
+		gameSync.Wait()
+
+		collectedNews := []discord.Game{}
+
+		for i := 0; i < len(newsChan); i++ {
+			news := <-newsChan
+			collectedNews = append(collectedNews, news)
 		}
 
 		log.Debug().
 			Int("collected articles", len(collectedNews)).
-			Int("games searched", gameCount).
+			Int("games searched", len(newsChan)).
 			Msg("collected all news for games")
 
 		// Send discord message
