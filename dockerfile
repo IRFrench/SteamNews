@@ -22,4 +22,4 @@ WORKDIR /etc
 
 VOLUME /etc
 
-CMD ["steamnews", "-q"]
+CMD ["steamnews"]
