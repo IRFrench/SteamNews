@@ -193,8 +193,6 @@ func SendNewsUpdate(steamClient *steam.SteamClient, discordClient *discord.Disco
 							log.Warn().Str("url", article.Url).Msg("could not parse url")
 						}
 
-						fmt.Println(article)
-
 						articles = append(articles, discord.ShortArticle{
 							Title:    article.Title,
 							Url:      url.String(),
