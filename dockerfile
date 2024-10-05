@@ -12,7 +12,7 @@ RUN CGO_ENABLED=0 go build -o ./build/steamnews ./cmd/main.go
 # Create the container
 FROM alpine:3.20.2
 
-RUN apk update; apk add wget curl
+RUN apk update; apk add wget curl ca-certificates
 
 COPY --from=binary /opt/build/steamnews /usr/bin/steamnews
 
